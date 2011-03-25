@@ -55,9 +55,10 @@ function(code, envir, output=TRUE, source=TRUE, prompt=TRUE) {
     code <- sub('^@','',code)
     exp <- try(parse(text=code),TRUE)
     if(inherits(exp, 'try-error'))
-        return(exp)
-    
+        return(exp) 
     out <- ''
+    if(length(exp) == 0)
+        return(out)
     for(i in 1:length(exp)) {
         dep <- deparse(exp[[i]])
         res <- try(capture.output(eval(exp[i],envir)),TRUE)
