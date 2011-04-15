@@ -138,7 +138,10 @@ default_handlers <- function() {
 
 #other symbols that are not syntactically valid at the 
 #beginning of an expression: '&', '*', '%', '<' '>'
-default_delim <- function() c('<<', '>>')
+
+#This closing delimiter regex permits removal of trailing
+#newlines in the style of the brew package.
+default_delim <- function() c('<<', '>>|->>|->>\n')
 
 dispatch <- function(code, envir) {
     handlers <- list()
@@ -194,8 +197,6 @@ yarr <- function(file=stdin(),envir=parent.frame(),output=stdout(),text=NULL,
     if(nchar(delim[1]) < 1 || nchar(delim[2]) < 1)
         stop("\'delim\' items must not be empty")
 
-    assign(".delim", delim, envir)
-
     # Check handlers
     if(!is.list(handlers))
         stop("\'handlers\' must be a list")
@@ -222,13 +223,6 @@ yarr <- function(file=stdin(),envir=parent.frame(),output=stdout(),text=NULL,
     mlen   <- function(regex) attr(regex, "match.length")
 
     while(TRUE) {
-        # Update and recheck delim
-        if(exists(".delim", envir))
-            delim <- get(".delim", envir)
-        if(!is.character(delim) || length(delim) != 2)
-            stop("\'.delim\' must be a character vector of length two")
-        if(nchar(delim[1]) < 1 || nchar(delim[2]) < 1)
-            stop("\'.delim\' items must not be empty")
 
         # Read line, add back '\n', break on EOF
         if(line == '') {

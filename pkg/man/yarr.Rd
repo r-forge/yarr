@@ -74,12 +74,11 @@ yarr(file=stdin(), envir=parent.frame(), output=stdout(), text=NULL,
     and functions declared by earlier expressions are available to subsequent
     code. 
 
-    The \samp{delim} and \samp{handler} variables are stored in the \samp{envir}
-    environment under the names \samp{.delim} and \samp{.handler} respectively.
-    Modifications to these variables affect subsequent parsing of delimited 
-    text and handler dispatch. Hence, the \code{yarr} syntax may be modified on
+    The \samp{handler} variables are stored in the \samp{envir} environment
+    under the name \samp{.handler}. Modifications to this variable affects
+    subsequent handler dispatch. Hence, the \code{yarr} syntax may be modified on
     the fly. The \samp{citation.yarr} file included with this package illustrates
-    some advanced usage of these variables.
+    some advanced usage of this variable.
 
     If the \code{evaluate} package is installed and delimited code generates 
     graphical output, the last graphics state is stored in \samp{envir} with the

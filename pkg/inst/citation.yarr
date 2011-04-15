@@ -1,10 +1,4 @@
 <<
-    # Modify closing delimiter to remove trailing '\n'
-    # in the syle of the brew package. Must not use the
-    # literal value of .delim[2] so `yarr` doesn't
-    # parse incorrectly.
-    .delim[2] <-paste(.delim[2], c('|-','|-','\n'), collapse='', sep='')
->><<
     # Add a new handler to cite R
     .handlers[[length(.handlers) + 1]] <- list(
         regex = '^citation$',
