@@ -2,13 +2,12 @@
 #
 #  Copyright (C) 2011 Matthew S. Shotwell
 #
-#  yarr is free software; licensed under the terms of the 
-#  GNU General Public License; either version 2 of the License,
-#  or any later version. http://www.gnu.org
+#  yarr is free software; licensed under the terms of the GNU General Public
+#  License; either version 2 of the License, or any later version.
+#  http://www.gnu.org
 #
-#  This program is distributed WITHOUT ANY WARRANTY nor the 
-#  implied warranty of MERCHANTABILITY or FITNESS FOR A 
-#  PARTICULAR PURPOSE.  
+#  This program is distributed WITHOUT ANY WARRANTY nor the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
 
 # Escape reserved HTML characters
 escape_HTML <- function(text) {
@@ -19,11 +18,9 @@ escape_HTML <- function(text) {
             gsub('<', '&lt;', text)
 }
 
-# Code handlers with prototype:
-# function(code, envir), where code is a character vector of 
-# length one, and envir is the environment where evaluation
-# should occur. By convention, each of these handlers strip
-# any trailing newlines.
+# Code handlers with prototype: function(code, envir), where code is a character
+# vector of length one, and envir is the environment where evaluation should
+# occur. By convention, each of these handlers strip any trailing newlines.
 
 capture_handler_evaluate <-
 function(code, envir, output=TRUE, source=TRUE, prompt=TRUE) {
@@ -205,14 +202,10 @@ yarr <- function(file=stdin(),envir=parent.frame(),output=stdout(),text=NULL,
             stop("each handler must be a list")
         if(!all(c("regex", "handler") %in% names(hdl)))
             stop("each handler must have named elements \'regex\' and \'handler\'")
-        if(!is.character(hdl$regex))
-            stop("\'regex\' must be a character vector")
-        if(length(hdl$regex) != 1)
-            stop("\'regex\' must be of length one")
-        if(!is.function(hdl$handler))
-            stop("\'handler\' must be a function")
-        if(length(formals(hdl$handler)) < 2)
-            stop("\'handler\' must accept at least two arguments")
+        if(!is.character(hdl$regex) || length(hdl$regex) != 1)
+            stop("\'regex\' must be a character vector of length 1")
+        if(!is.function(hdl$handler) || length(formals(hdl$handler)) < 2)
+            stop("\'handler\' must be a function accepting two or more arguments")
     }
 
     assign(".handlers", handlers, envir)
