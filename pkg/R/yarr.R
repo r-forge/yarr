@@ -11,7 +11,7 @@
 #  PARTICULAR PURPOSE.  
 
 # Escape reserved HTML characters
-`escape_HTML` <- function(text) {
+escape_HTML <- function(text) {
     text <- gsub('&', '&amp;', text)
     text <- gsub('"', '&quot;', text)
     text <- gsub("'", '&apos;', text)
@@ -21,11 +21,11 @@
 
 # Code handlers with prototype:
 # function(code, envir), where code is a character vector of 
-# length one, and envir is the environment of previously
-# handled code. By convention, each of these handlers strip
+# length one, and envir is the environment where evaluation
+# should occur. By convention, each of these handlers strip
 # any trailing newlines.
 
-`capture_handler_evaluate` <-
+capture_handler_evaluate <-
 function(code, envir, output=TRUE, source=TRUE, prompt=TRUE) {
     require("evaluate", quietly=TRUE)
     code <- sub('^@','',code)
@@ -50,15 +50,14 @@ function(code, envir, output=TRUE, source=TRUE, prompt=TRUE) {
     return(out)
 }
 
-`capture_handler_classic` <-
+capture_handler_classic <-
 function(code, envir, output=TRUE, source=TRUE, prompt=TRUE) {
     code <- sub('^@','',code)
     exp <- try(parse(text=code),TRUE)
     if(inherits(exp, 'try-error'))
         return(exp) 
     out <- ''
-    if(length(exp) == 0)
-        return(out)
+    if(length(exp) == 0) return(out)
     for(i in 1:length(exp)) {
         dep <- deparse(exp[[i]])
         res <- try(capture.output(eval(exp[i],envir)),TRUE)
@@ -77,7 +76,7 @@ function(code, envir, output=TRUE, source=TRUE, prompt=TRUE) {
     return(out)
 }
 
-`capture_handler` <-
+capture_handler <-
 function(code, envir, output=TRUE, source=TRUE, prompt=TRUE) {
     if(suppressWarnings(require("evaluate", quietly=TRUE))) {
         capture_handler_evaluate(code, envir, output, source, prompt)
@@ -86,25 +85,21 @@ function(code, envir, output=TRUE, source=TRUE, prompt=TRUE) {
     }
 }
 
-`silent_handler` <-
-function(code, envir) {
+silent_handler <- function(code, envir) {
     capture_handler(code, envir, output=FALSE)
 }
 
-`result_handler` <-
-function(code, envir) {
+result_handler <- function(code, envir) {
     code <- sub('^=','',code)
     capture_handler(code, envir, source=FALSE)
 }
 
-`source_handler` <-
-function(code, envir) {
+source_handler <- function(code, envir) {
     code <- sub('^&','',code)
     capture_handler(code, envir, prompt=FALSE)
 }
 
-`line_fmt` <-
-function(x, prompt=TRUE) {
+line_fmt <- function(x, prompt=TRUE) {
     lines <- unlist(strsplit(x, '\n'))
     if(prompt) {
         lines[1] <- paste(options('prompt'), lines[1], sep='')
@@ -114,25 +109,22 @@ function(x, prompt=TRUE) {
     paste(lines, '\n', collapse='', sep='')
 }
 
-`html_result_handler` <-
-function(code, envir) {
+html_result_handler <- function(code, envir) {
     code <- sub('^/','',code)
     escape_HTML(result_handler(code,envir))
 }
 
-`html_source_handler` <-
-function(code, envir) {
+html_source_handler <- function(code, envir) {
     code <- sub('^/','',code)
     escape_HTML(source_handler(code,envir))
 }
 
-`html_capture_handler` <-
-function(code, envir) {
+html_capture_handler <- function(code, envir) {
     code <- sub('^/','',code)
     escape_HTML(capture_handler(code,envir))
 }
 
-`default_handlers` <- function() {
+default_handlers <- function() {
     handlers <- list()
     handlers[[1]] <- list(regex='',handler=silent_handler)
     handlers[[2]] <- list(regex='^=',handler=result_handler)
@@ -146,10 +138,9 @@ function(code, envir) {
 
 #other symbols that are not syntactically valid at the 
 #beginning of an expression: '&', '*', '%', '<' '>'
-`default_delim` <- function() c('<<', '>>')
+default_delim <- function() c('<<', '>>')
 
-`dispatch` <- 
-function(code, envir) {
+dispatch <- function(code, envir) {
     handlers <- list()
     if(exists(".handlers", envir))
         handlers <- get(".handlers", envir)
@@ -163,8 +154,7 @@ function(code, envir) {
     try(as.character(hdl(code, envir)),TRUE)
 }
 
-`yarr` <-
-function(file=stdin(),envir=parent.frame(),output=stdout(),text=NULL,
+yarr <- function(file=stdin(),envir=parent.frame(),output=stdout(),text=NULL,
          delim=default_delim(),handlers=default_handlers()) {
 
     closeIcon <- closeOcon <- FALSE
@@ -175,7 +165,7 @@ function(file=stdin(),envir=parent.frame(),output=stdout(),text=NULL,
         icon <- textConnection(text)
     } else if (inherits(file,'connection') && isOpen(file,"read")) {
         icon <- file
-    } else if (is.character(file) && file.exists(file)) {
+    } else if (is.character(file)) {
         closeIcon <- TRUE
         icon <- file(file,open="rt")
     } else {
@@ -225,12 +215,6 @@ function(file=stdin(),envir=parent.frame(),output=stdout(),text=NULL,
     }
 
     assign(".handlers", handlers, envir)
-
-    # Use undocumented null graphics device to avoid plot windows opening
-    # Thanks to Paul Murrell & Hadley Wickham
-    #.Call("R_GD_nullDevice", PACKAGE = "grDevices")
-    #dev.control("enable")
-    #on.exit(dev.off())
 
     MKCODE <- 0   
     MKTEXT <- status <- 1
